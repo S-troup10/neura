@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Full Quill Editor - Dark Theme</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Quill Snow Theme -->
+
+
+  <style>
+
+  </style>
+</head>
+
+<body class="bg-gray-900 text-gray-100">
+  <div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold text-center mb-6">Compose Your Email</h1>
+
+    <!-- Quill Editor -->
+    <div id="email-content-editor" class="mb-6 rounded-lg overflow-hidden"></div>
+
+    <!-- Save Button -->
+    <div class="text-center mt-6">
+      <button id="save-content" class="save-btn">Save Content</button>
+    </div>
+  </div>
+
+  <!-- Quill.js -->
+ 
+
+    document.getElementById('save-content').addEventListener('click', function () {
+      const emailContent = quill.root.innerHTML;
+      console.log(emailContent); // Save or send to server
+    });
+  </script>
+</body>
+</html>

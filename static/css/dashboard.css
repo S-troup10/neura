@@ -1,0 +1,274 @@
+
+body {
+  background: linear-gradient(135deg, #0d0d0d, #1a1a2e, #3a0ca3, #7209b7);
+  background-size: 400% 400%;
+  animation: bgAnimation 8s infinite alternate ease-in-out;
+  color: white;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+}
+@keyframes bgAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 50% 50%;
+  }
+}
+/* Cyberpunk Sidebar */
+.sidebar {
+  width: 4rem;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(15px);
+
+  border-right: 3px solid rgba(143, 143, 143, 0.4);
+}
+.sidebar:hover {
+  width: 15rem;
+  
+}
+
+/* Cyberpunk Menu Items */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  white-space: nowrap;
+  text-decoration: none;
+  color: #f5f5f5;
+  font-size: 1rem;
+  font-family: 'Orbitron', sans-serif;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.menu-item:hover {
+  transform: scale(1.01);
+
+  text-shadow: 0 0 10px cyan, 0 0 20px magenta;
+
+}
+
+.menu-item:hover i {
+  text-shadow: 0 0 10px cyan, 0 0 20px magenta, 0 0 30px purple;
+}
+
+
+.menu-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 5px;
+  height: 0%;
+  background: linear-gradient(180deg, cyan, rgb(160, 0, 160));
+  transition: height 0.3s ease-in-out, top 0.3s ease-in-out;
+}
+
+.menu-item:hover::before {
+  height: 100%;
+  top: 0;
+}
+
+/* Sidebar Expands Text */
+.menu-item span {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  margin-left: 1rem;
+}
+.sidebar:hover .menu-item span {
+  opacity: 1;
+}
+
+/* Cyberpunk Customer Section */
+.customer-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.25rem;
+  padding-top: 1rem;
+  white-space: nowrap;
+  min-height: 5rem;
+  
+}
+
+/* Neon Customer Avatar */
+.customer-section img {
+  width: 2.3rem;
+  height: 2.3rem;
+  border-radius: 50%;
+  object-fit: cover;
+
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+.customer-section img:hover {
+  transform: scale(1.1);
+  
+}
+
+/* Hide Customer Name by Default */
+.customer-info {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Show Customer Name on Sidebar Hover */
+.sidebar:hover .customer-info {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Neon Glow Effect on Hover */
+.glow-text {
+  font-size: 1.1rem;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  color: #00ffee;
+  
+}
+
+.main-content {
+  
+  padding: 2rem;
+  flex-grow: 1;
+  overflow-y: auto;
+  height: 100vh;
+}
+
+ /* Button styles */
+ .button {
+  padding: 0.75rem 1.5rem;
+  background-color: #1a1a2e;
+  color: white;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.button:hover {
+  background-color: #7209b7;
+  color: white;
+  box-shadow: 0 0 6px rgba(0, 255, 255, 0.6); /* Subtle glow */
+  transform: translateY(-1px); /* Slight lift */
+}
+/* Transition effects for the sections */
+/* Transition effects for the sections */
+
+
+.glow-error {
+  border-color: red !important;
+  animation: glowError 1s infinite alternate;
+}
+
+@keyframes glowError {
+  0% { box-shadow: 0px 0px 5px red; }
+  100% { box-shadow: 0px 0px 15px red; }
+}
+input:-webkit-autofill {
+  background-color: transparent !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(31, 41, 55, 1) inset !important; /* bg-gray-800 */
+  -webkit-text-fill-color: white !important;
+  border-color: #4b5563 !important;
+}
+
+/* Handle hover, focus, and active states */
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  background-color: transparent !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(31, 41, 55, 1) inset !important;
+  -webkit-text-fill-color: white !important;
+  border-color: #4b5563 !important;
+}
+
+
+.spinner {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: radial-gradient(farthest-side, #474bff 94%, #0000) top/11.5px 11.5px no-repeat,
+              conic-gradient(#0000 30%, #474bff);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 11.5px), #000 0);
+  animation: spinner-c7wet2 1s infinite linear;
+}
+
+@keyframes spinner-c7wet2 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+#campaignDetails button {
+  transition: opacity 0.3s ease;
+}
+
+
+
+
+
+    /* Quill Dark Theme Overrides */
+    .ql-toolbar.ql-snow {
+      background-color: #1f2937; /* gray-800 */
+      border: 1px solid #374151; /* gray-700 */
+      border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+    .ql-toolbar button,
+    .ql-toolbar .ql-picker-label,
+    .ql-toolbar .ql-picker-item {
+      color: #f9fafb; /* gray-100 */
+    }
+
+    .ql-toolbar .ql-picker-options {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
+
+    .ql-toolbar .ql-stroke {
+      stroke: #f9fafb;
+    }
+
+    .ql-toolbar .ql-fill {
+      fill: #f9fafb;
+    }
+
+    .ql-container.ql-snow {
+      background-color: #111827; /* gray-900 */
+      color: #f9fafb;
+      border: 1px solid #374151;
+      border-radius: 0 0 0.5rem 0.5rem;
+    }
+
+    .ql-editor {
+      min-height: 400px;
+      font-size: 1rem;
+    }
+
+    .save-btn {
+      background: linear-gradient(to right, #3b82f6, #8b5cf6);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .save-btn:hover {
+      transform: scale(1.05);
+    }
+    .ql-editor::before {
+        color: #f9fafb !important;
+        opacity: 0.6;
+      }
+      #email-content-editor {
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(59, 130, 246, 0.1);
+      }

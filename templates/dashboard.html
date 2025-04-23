@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Cold Email Dashboard - Manage your email campaigns with ease." />
+  <title>Cold Email Dashboard</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+  <!-- Quill CSS -->
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+  
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+<!-- Quill JS -->
+
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="/static/css/dashboard.css" />
+</head>
+
+<body class="text-white h-screen flex overflow-hidden bg-gray-900">
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar bg-gray-800 text-white h-full flex flex-col p-2 shadow-lg">
+    <!-- Customer Section -->
+
+    <div class="customer-section">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoFRQjM-wM_nXMA03AGDXgJK3VeX7vtD3ctA&s"
+        alt="User Avatar" class="bg-gray-300 rounded-full w-10 h-10" />
+      <div class="customer-info">
+        <h2 id="nav-name" class="text-lg font-semibold">John Doe</h2>
+        <p id="nav-status" class="text-sm text-gray-400">Customer</p>
+      </div>
+    </div>
+    <!-- Navigation Menu Items -->
+    <ul class="flex-1 mt-4">
+      <li class="menu-item" onclick="switchScreen('dashboard')">
+        <div  class="flex items-center">
+          <i class="fa-solid fa-layer-group text-xl"></i>
+          <span>Dashboard</span>
+        </div>
+      </li>
+
+      <li class="menu-item" onclick="switchScreen('campaigns')">
+        <div  class="flex items-center">
+          <i class="fa-solid fa-envelope text-xl"></i>
+          <span>Email Campaigns</span>
+        </div>
+      </li>
+      <li class="menu-item" onclick="switchScreen('analytics')">
+        <div  class="flex items-center">
+          <i class="fa-solid fa-chart-line text-xl"></i>
+          <span>Analytics</span>
+        </div>
+      </li>
+      <li class="menu-item" onclick="switchScreen('lists')">
+        <div  class="flex items-center">
+          <i class="fa-solid fa-scroll"></i>
+          <span>Lists</span>
+        </div>
+      </li>
+      <li class="menu-item" onclick="switchScreen('settings')">
+        <div  class="flex items-center">
+          <i class="fa-solid fa-cog text-xl"></i>
+          <span>Settings</span>
+        </div>
+      </li>
+     
+      <li class="menu-item" onclick="openLogoutModal()">
+        <div  class="flex items-center">
+          <i class="fa-solid fa-right-from-bracket text-xl"></i>
+          <span>Log Out</span>
+        </div>
+      </li>
+    </ul>
+  </nav>
+
+
+
+
+
+
+
+
+  <div
+    class="dashboard absolute bottom-10 left-40 w-20 h-20 bg-blue-500 rounded-full opacity-30 blur-2xl animate-pulse">
+  </div>
+  <div class="absolute top-10 right-20 w-24 h-24 bg-purple-500 rounded-full opacity-30 blur-2xl animate-pulse"></div>
+
+
+
+
+
+
+
+
+
+
+  <div id="dashboard" class="flex-1 p-4 main-content transition-all duration-500 opacity-100 transform translate-x-0">
+    <!-- Dashboard Overview -->
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-4">Campaigns Overview</h3>
+        <p class="text-gray-400">
+          Total Campaigns:
+          <span class="text-2xl font-bold text-cyan-400">15</span>
+        </p>
+        <p class="text-gray-400">
+          Active Campaigns:
+          <span class="text-2xl font-bold text-green-400">10</span>
+        </p>
+        <p class="text-gray-400">
+          Paused Campaigns:
+          <span class="text-2xl font-bold text-red-400">5</span>
+        </p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold mb-4">Email List Stats</h3>
+        <p class="text-gray-400">
+          Total Contacts:
+          <span class="text-2xl font-bold text-cyan-400">250</span>
+        </p>
+        <p class="text-gray-400">
+          Subscribed:
+          <span class="text-2xl font-bold text-green-400">230</span>
+        </p>
+        <p class="text-gray-400">
+          Unsubscribed:
+          <span class="text-2xl font-bold text-red-400">20</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Campaign Management Section -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+      <h3 class="text-xl font-semibold mb-4">Manage Your Campaigns</h3>
+      <button class="button bg-cyan-500 hover:bg-cyan-700 text-white py-2 px-4 rounded-md">
+        Create New Campaign
+      </button>
+      <div class="mt-4">
+        <h4 class="text-lg font-semibold">Campaign List</h4>
+        <ul class="space-y-2 mt-2">
+          <li class="text-gray-400">
+            Campaign #1 - Status: <span class="text-green-400">Active</span>
+          </li>
+          <li class="text-gray-400">
+            Campaign #2 - Status: <span class="text-red-400">Paused</span>
+          </li>
+          <li class="text-gray-400">
+            Campaign #3 - Status: <span class="text-green-400">Active</span>
+          </li>
+          <!-- Add more campaigns here -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+      <h3 class="text-xl font-semibold mb-4">Campaign Analytics</h3>
+      <p class="text-gray-400">
+        Here you can view detailed insights on the performance of your email
+        campaigns, including open rates, click rates, and conversions.
+      </p>
+      <div class="mt-4">
+        <button class="button bg-cyan-500 hover:bg-cyan-700 text-white py-2 px-4 rounded-md">
+          View Analytics
+        </button>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+      <h3 class="text-xl font-semibold mb-4">App Settings</h3>
+      <p class="text-gray-400">
+        Configure your email marketing preferences, update your profile, and
+        manage integrations.
+      </p>
+      <div class="mt-4">
+        <button class="button bg-cyan-500 hover:bg-cyan-700 text-white py-2 px-4 rounded-md">
+          Update Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div id="campaigns" class="main-content flex-1 p-4 main-content transition-all duration-500 opacity-0 transform translate-x-0 hidden">
+    <div class="p-6 text-white min-h-screen">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Email Campaigns</h1>
+        <button onclick="openCampaignModal()" class="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-600 to-purple-600 text-white shadow-lg hover:scale-105 transition-transform duration-300">
+          <i class="fas fa-plus text-xl"></i>
+        </button>
+        
+      </div>
+    
+      <!-- Global Campaign Settings -->
+      <div class="flex flex-wrap gap-6 mb-3 items-center">
+        <button id="backb"  style="opacity: 0;" onclick="backToCampaignList()" class="p-2 rounded-full text-white shadow-lg">
+          <i class="fas fa-arrow-left text-xl"></i>
+        </button>
+        <div class="flex items-center gap-3">
+          <label class="text-sm font-medium">Paused:</label>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" value="" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+          </label>
+        </div>
+      </div>
+    
+      <!-- Campaigns List -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="campaignList">
+      </div>
+    
+      <!-- Campaign Details / Edit View -->
+      <div id="campaignDetails" class="hidden">
+        <!-- Tabs Navigation -->
+        <div class="flex justify-between">
+
+           <h2 id="detailTitle" class="text-2xl mb-3 font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text ml-4">Edit Campaign</h2>
+           <button onclick="saveEmailList()" id="update-campaign" class="bottom-6 px-8 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-green-400/30 transition-all duration-300">
+             Save Changes
+           </button>
+
+         </div>
+<div class="flex space-x-4 mb-6 border-b border-gray-700" id="campaignTabs">
+  <button class="tab-button px-4 py-2 text-sm font-semibold text-white border-b-2 border-transparent hover:border-purple-500 active-tab" onclick="showTab('emailTab')">Create Email</button>
+  <button class="tab-button px-4 py-2 text-sm font-semibold text-white border-b-2 border-transparent hover:border-purple-500" onclick="showTab('listTab')">List</button>
+  <button class="tab-button px-4 py-2 text-sm font-semibold text-white border-b-2 border-transparent hover:border-purple-500" onclick="showTab('settingsTab')">Settings</button>
+</div>
+
+
+
+<input type="hidden" id="campaignId" value="">
+
+
+
+
+
+<!-- Create Email Section -->
+<div id="emailTab" class="tab-content hidden">
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2">Email Subject</label>
+    <input type="text" id="email-subject" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg">
+  </div>
+
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2">Email Content</label>
+    <div id="email-content-editor" class="mb-6 rounded-lg overflow-hidden"></div>
+  </div>
+</div>
+
+
+
+
+
+<!-- List Section -->
+<div id="listTab" class="tab-content hidden">
+  <h2 class="text-2xl font-bold text-center mb-4">Recipient List</h2>
+
+  <!-- Dropdown Section -->
+  <div class="text-center mb-3">
+    <label for="input-method" class="mr-2 font-semibold text-gray-100">Select Input Method:</label>
+    <div class="relative inline-block w-60">
+      <select id="input-method" class="bg-gray-800 text-gray-100 border border-gray-600 rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-blue-600 focus:outline-none">
+        <!---<option value="saved">Saved Lists</option>-->
+        <option value="upload">Upload File</option>
+        <option value="manual">Add Manually</option>
+      </select>
+
+    </div>
+  </div>
+
+  <!-- Input Method Sections -->
+
+
+  <div id="upload-section" class="hidden bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md space-y-4">
+    <p class="font-semibold">Upload a CSV file:</p>
+    <input type="file" accept=".csv" id="csv-upload" class="bg-gray-700 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+    <p id="csv-file-name" class="text-sm text-gray-400"></p>
+  </div>
+
+
+  <div id="saved-section" class="bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md">
+    <p class="mb-2 font-semibold">Select from your saved lists:</p>
+    <select class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full">
+      <option disabled selected>Select a list</option>
+      <option value="sample">Sample List</option>
+    </select>
+  </div>
+
+
+  <div id="manual-section" class="hidden bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md space-y-4">
+    <p class="font-semibold">Add recipients manually:</p>
+    <div class="flex flex-col gap-4 md:flex-row md:gap-2">
+      <input type="text" id="manual-name" placeholder="Name" class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <input type="email" id="manual-email" placeholder="Email" class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <input type="text" id="manual-company" placeholder="Company" class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <button onclick="addManualRecipient()" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:scale-105 transition-all ease-in-out">
+        Add
+      </button>
+    </div>
+  </div>
+
+  <!-- Live Recipient Table -->
+  <div class="bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md mt-3">
+    <h3 class="text-lg font-semibold mb-2">All Recipients</h3>
+    <div class="max-h-64 overflow-y-auto border border-gray-600 rounded-lg shadow-inner">
+      <table class="w-full text-left text-sm">
+        <thead class="bg-gray-700">
+          <tr>
+            <th class="py-2 px-3 text-gray-200">Name</th>
+            <th class="py-2 px-3 text-gray-200">Email</th>
+            <th class="py-2 px-3 text-gray-200">Company</th>
+          </tr>
+        </thead>
+        <tbody id="all-recipient-table-body">
+          <tr><td colspan="3" class="py-4 text-center text-gray-400">No recipients added.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Section -->
+<div id="settingsTab" class="tab-content hidden">
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2">Email Recurrence</label>
+    <input type="number" id="campaign-delay" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg">
+  </div>
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2">Status</label>
+    <select id="campaign-paused" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg">
+      <option>Running</option>
+      <option>Paused</option>
+    </select>
+  </div>
+
+  <div class="mb-4">
+    <label class="block text-sm font-medium mb-2">Start Date</label>
+    <input type="date" id="campaign-date" class="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg">
+  </div> 
+
+  <div class="text-center">
+    <button class="px-6 py-2 rounded-full bg-gradient-to-r from-green-600 to-lime-600 text-white shadow-lg hover:scale-105 transition-transform duration-300">
+      Send Email Now
+    </button>
+  </div>
+</div>
+
+
+
+
+
+
+<style>
+  .active-tab {
+    border-color: #a855f7; /* purple-500 */
+  }
+</style>
+
+    </div>
+  </div>
+  </div>
+  
+  
+
+
+
+
+
+
+  <div id="analytics" class="flex-1 p-4 main-content transition-all duration-500 opacity-0 transform translate-x-0 hidden">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+      <h3 class="text-xl font-semibold mb-4">Campaign Analytics</h3>
+      <p class="text-gray-400">
+        Here you can view detailed insights on the performance of your email
+        campaigns, including open rates, click rates, and conversions.
+      </p>
+    </div>
+
+    <!-- Campaign Performance Overview -->
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h4 class="text-lg font-semibold mb-4">Open Rate</h4>
+        <div class="text-2xl font-bold text-cyan-400">78%</div>
+        <p class="text-gray-400">
+          Percentage of recipients who opened the email. A higher open rate
+          indicates good subject lines and timing.
+        </p>
+      </div>
+
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h4 class="text-lg font-semibold mb-4">Click-Through Rate (CTR)</h4>
+        <div class="text-2xl font-bold text-green-400">35%</div>
+        <p class="text-gray-400">
+          Percentage of recipients who clicked on a link within your email. A
+          high CTR suggests effective content and CTAs.
+        </p>
+      </div>
+    </div>
+
+    <!-- Campaign Conversion -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+      <h4 class="text-lg font-semibold mb-4">Campaign Conversion</h4>
+      <div class="text-2xl font-bold text-red-400">5%</div>
+      <p class="text-gray-400">
+        Percentage of users who completed a desired action (purchase, sign-up,
+        etc.) after interacting with the email.
+      </p>
+    </div>
+
+    <!-- Performance Chart (Placeholder) -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+      <h4 class="text-lg font-semibold mb-4">Performance Over Time</h4>
+      <div class="h-64 bg-gray-700 rounded-lg">
+        <!-- Placeholder for a graph/chart, can integrate with chart libraries like Chart.js or D3.js -->
+        <p class="text-center text-gray-400 mt-24">Chart Placeholder</p>
+      </div>
+    </div>
+
+    <!-- Email Campaign Stats -->
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+      <h4 class="text-lg font-semibold mb-4">Recent Campaign Stats</h4>
+      <ul class="space-y-2">
+        <li class="text-gray-400">
+          <span class="text-green-400">Campaign #1</span> - Open Rate: 80%,
+          CTR: 40%, Conversion: 6%
+        </li>
+        <li class="text-gray-400">
+          <span class="text-red-400">Campaign #2</span> - Open Rate: 70%, CTR:
+          30%, Conversion: 4%
+        </li>
+        <li class="text-gray-400">
+          <span class="text-green-400">Campaign #3</span> - Open Rate: 75%,
+          CTR: 33%, Conversion: 5%
+        </li>
+        <!-- Add more campaigns as necessary -->
+      </ul>
+    </div>
+  </div>
+
+  <div id="settings" class="main-content transition-all duration-500 opacity-0 transform translate-x-full hidden">
+    settings
+  </div>
+
+  <div id="list" class="main-content transition-all duration-500 opacity-0 transform translate-x-full hidden">
+    <h2 class="text-2xl font-bold text-center mb-4">Create New Email List</h2>
+
+    <!-- List Title and Description -->
+    <div class="space-y-4">
+      <input type="text" id="list-title" placeholder="List Title" class="bg-gray-800 text-gray-100 p-4 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <textarea id="list-description" placeholder="Optional description for your list" class="bg-gray-800 text-gray-100 p-4 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600"></textarea>
+    </div>
+  
+    <!-- Dropdown Section: Input Method Selector -->
+    <div class="text-center">
+      <label for="input-method" class="mr-2 font-semibold text-gray-100">Select Input Method:</label>
+      <div class="relative inline-block w-60">
+        <select id="input-method" class="bg-gray-800 text-gray-100 border border-gray-600 rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-blue-600 focus:outline-none">
+          <option value="saved">Saved Lists</option>
+          <option value="upload">Upload File</option>
+          <option value="manual">Add Manually</option>
+        </select>
+        <div class="absolute top-0 right-0 p-3 text-gray-500">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Input Method Sections (Saved Lists, Upload, Manual) -->
+    <div id="saved-section" class="bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md">
+      <p class="mb-2 font-semibold">Select from your saved lists:</p>
+      <select class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full">
+        <option disabled selected>Select a list</option>
+        <option value="sample">Sample List</option>
+      </select>
+    </div>
+  
+    <div id="upload-section" class="hidden bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md space-y-4">
+      <p class="font-semibold">Upload a CSV file:</p>
+      <input type="file" accept=".csv" id="csv-upload" class="bg-gray-700 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <p id="csv-file-name" class="text-sm text-gray-400"></p>
+    </div>
+  
+    <div id="manual-section" class="hidden bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md space-y-4">
+      <p class="font-semibold">Add recipients manually:</p>
+      <div class="flex flex-col gap-4 md:flex-row md:gap-2">
+        <input type="text" id="manual-name" placeholder="Name" class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <input type="email" id="manual-email" placeholder="Email" class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <input type="text" id="manual-company" placeholder="Company" class="bg-gray-700 text-gray-100 p-3 rounded-lg w-full border-2 border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        <button onclick="addManualRecipient()" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:scale-105 transition-all ease-in-out">
+          Add
+        </button>
+      </div>
+    </div>
+  
+    <!-- Preview List -->
+    <div class="bg-gray-800 text-gray-100 p-4 rounded-lg shadow-md space-y-4">
+      <h3 class="text-lg font-semibold mb-2">Preview Your List</h3>
+      <div class="max-h-64 overflow-y-auto border border-gray-600 rounded-lg shadow-inner">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-gray-700">
+            <tr>
+              <th class="py-2 px-3 text-gray-200">Name</th>
+              <th class="py-2 px-3 text-gray-200">Email</th>
+              <th class="py-2 px-3 text-gray-200">Company</th>
+            </tr>
+          </thead>
+          <tbody id="list-preview-body">
+            <tr><td colspan="3" class="py-4 text-center text-gray-400">No recipients added.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- Save Button -->
+    <div class="text-center mt-6">
+      <button onclick="saveList()" class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-6 py-3 rounded-full font-semibold hover:scale-105 transition-all ease-in-out">
+        Save List
+      </button>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+<!-- Modal for Adding Campaign -->
+<div id="addCampaignModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm hidden" onclick="if(event.target === this) closeModal()">
+  <div id="addCampaignModalContent" class="relative bg-gradient-to-br from-gray-950 via-gray-900 to-black border border-gray-800 rounded-2xl shadow-2xl p-12 w-full max-w-2xl text-white opacity-0 scale-95 transition-all duration-300 ease-out space-y-6">
+    
+    <!-- Close Icon -->
+    <button onclick="closeCampaignModal()" class="absolute top-4 right-4 text-gray-500 hover:text-red-400 transition duration-200 text-3xl">
+      &times;
+    </button>
+
+    <!-- Modal Header -->
+    <div class="text-center space-y-2">
+      <div class="flex justify-center mb-2">
+        <div class="bg-blue-600/20 p-4 rounded-full border border-blue-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+      </div>
+      <h2 class="text-3xl font-bold">Create New Campaign</h2>
+      <p class="text-gray-400 text-sm">Set up your campaign details and email settings</p>
+    </div>
+
+    <!-- Multi-section Form -->
+    <form id="addCampaignForm" class="space-y-10">
+      
+      <!-- Section 1: Basic Info -->
+      <div id="section1" class="form-section space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold border-b border-gray-700 pb-2">📝 Basic Information</h3>
+        </div>
+
+        <div>
+          <label for="campaignName" class="block text-sm font-medium text-gray-300">Campaign Name</label>
+          <input type="text" id="campaignName" name="campaignName" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-200" placeholder="e.g., Welcome Series" required>
+        </div>
+
+        <div>
+          <label for="emailDelay" class="block text-sm font-medium text-gray-300">Delay Between Emails (in days)</label>
+          <input type="number" id="emailDelay" name="emailDelay" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-200" min="0" placeholder="e.g., 2" required>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="button" onclick="nextSection(2)" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-blue-500/30 transition-all duration-300">
+            Next
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 2: Campaign Settings -->
+      <div id="section2" class="form-section hidden space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold border-b border-gray-700 pb-2">⚙️ Campaign Settings</h3>
+        </div>
+
+        <div>
+          <label for="campaignStatus" class="block text-sm font-medium text-gray-300">Status</label>
+          <select id="campaignStatus" name="campaignStatus" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-200">
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="startDate" class="block text-sm font-medium text-gray-300">Start Date</label>
+          <input type="date" id="startDate" name="startDate" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-200" required>
+        </div>
+
+        <div class="flex justify-between">
+          <button type="button" onclick="prevSection(1)" class="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-all duration-300">
+            Back
+          </button>
+          <button type="button" onclick="nextSection(3)" class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-blue-500/30 transition-all duration-300">
+            Next
+          </button>
+        </div>
+      </div>
+
+      <!-- Section 3: Email & App Password -->
+      <div id="section3" class="form-section hidden space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold border-b border-gray-700 pb-2">📧 Email & App Password</h3>
+        </div>
+        <p id="campaign-error" class="hidden text-center text-lg font-medium text-red-500 bg-gray-800 rounded-lg border border-red-600 shadow-md p-4 transition-all duration-300">
+          error adding campaign
+        </p>
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300">Email Address</label>
+          <input type="email" id="email" name="email" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-200" placeholder="you@example.com" >
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center">
+            <label for="appPassword" class="block text-sm font-medium text-gray-300">App Password</label>
+            <div class="relative inline-block group">
+              <a id="whatisthis" class="text-blue-300 text-xs hover:underline" 
+                 
+                 target="_blank">
+                 What is this?
+              </a>
+            
+              <!-- Tooltip GIF -->
+              <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden group-hover:block z-50">
+                <img src="https://docs.hoory.com/assets/images/generate_password-b744bff8eb9949f419b013e2852b57c6.gif" 
+                     alt="App Password Help" 
+                     class="w-[700px] max-w-[90vw] h-auto rounded-lg shadow-lg border border-gray-700">
+              </div>
+            </div>
+            
+          </div>
+          <input type="password" id="appPassword" name="appPassword" class="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-200" placeholder="••••••••" >
+        </div>
+
+        <div class="flex justify-between">
+          <button type="button" onclick="prevSection(2)" class="px-8 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-all duration-300">
+            Back
+          </button>
+          <button type="submit" class="px-8 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-green-400/30 transition-all duration-300">
+            Add Campaign
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+
+
+
+  <div id="logoutModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm hidden" onclick="if(event.target === this) closeModal()">
+    <div id="logoutModalContent" class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black border border-gray-700 rounded-2xl shadow-xl shadow-blue-600/30 p-8 w-[420px] text-white opacity-0 scale-95 transition-all duration-300 ease-out">
+      
+      <!-- Close Icon -->
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-400 transition duration-200 text-2xl">
+        &times;
+      </button>
+  
+      <!-- Icon -->
+      <div class="flex justify-center mb-4">
+        <div class="bg-red-600/20 p-4 rounded-full border border-red-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10v1" />
+          </svg>
+        </div>
+      </div>
+  
+      <!-- Title -->
+      <h2 class="text-2xl font-semibold text-center text-white mb-2">Log Out?</h2>
+      <p class="text-center text-gray-400 mb-6">You're about to be signed out of your account. Are you sure you want to continue?</p>
+  
+      <!-- Buttons -->
+      <div class="flex justify-center gap-4">
+        <button onclick="confirmLogout()" class="px-6 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white font-medium rounded-lg shadow-md hover:scale-105 hover:shadow-red-500/30 transition-all duration-300">
+          Yes, Log Out
+        </button>
+        <button onclick="closeModal()" class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition-all duration-300">
+          Cancel
+        </button>
+      </div>
+  
+
+
+      <div id='loader' style='display: none;' class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+
+      <script src="/static/js/campaign/edit.js"></script>
+      <script src="/static/js/campaign/campaigns.js"></script>
+      <script src="/static/js/campaign/load.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <!--<script src="/static/js/lists/list.js"></script>-->
+  
+</body>
+
+</html>
