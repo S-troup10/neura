@@ -26,6 +26,20 @@ body {
 
   border-right: 3px solid rgba(143, 143, 143, 0.4);
 }
+
+@media (max-width: 800px) {
+
+  .sidebar {
+    position: absolute;
+    z-index: 49;
+  }
+  .main-content {
+    margin-left: 4rem;
+  }
+
+}
+  
+
 .sidebar:hover {
   width: 15rem;
   
@@ -272,3 +286,107 @@ input:-webkit-autofill:active {
       #email-content-editor {
         box-shadow: 0 0 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(59, 130, 246, 0.1);
       }
+
+    
+
+
+
+  .time-control-btn {
+    background-color: #4a4a4a;
+    color: white;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    transition: background 0.2s ease;
+  }
+
+  .time-control-btn:hover {
+    background-color: #9f7aea;
+    cursor: pointer;
+  }
+
+  #selected-hour, #selected-minute {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+
+  .sel {
+    transform: scale(1.01);
+  
+    text-shadow: 0 0 10px cyan, 0 0 20px magenta;
+  
+  }
+  
+  .sel i {
+    text-shadow: 0 0 10px cyan, 0 0 20px magenta, 0 0 30px purple;
+  }
+  .sel::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0; /* Always start from the top */
+    width: 5px;
+    height: 100%; /* Always full height */
+    background: linear-gradient(180deg, cyan, rgb(160, 0, 160));
+  }
+  
+/* Highlighted row style */
+.row-selected {
+  background: linear-gradient(90deg, rgba(0, 214, 214, 0.7), rgba(247, 0, 247, 0.6));
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+  animation: pulse-glow 4s infinite ease-in-out;
+ 
+  position: relative;
+}
+
+/* Bold the text inside selected row */
+.row-selected td {
+  font-weight: 600;
+}
+
+/* Pulse-Glow animation */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(247, 0, 247, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.5);
+  }
+}
+
+.list-row-selected {
+  background: linear-gradient(90deg, rgba(0, 214, 214, 0.7), rgba(247, 0, 247, 0.6));
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+  animation: pulse-glow 4s infinite ease-in-out;
+ 
+  position: relative;
+}
+
+/* Bold the text inside selected row */
+.list-row-selected td {
+  font-weight: 600;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.95); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-in forwards;
+}
+

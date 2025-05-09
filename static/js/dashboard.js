@@ -8,10 +8,14 @@ const screens = {
   lists: document.getElementById('list')
 };
 function switchScreen(screen) {
+  //fitst highlight the new icon
+  document.getElementById(`${currentScreen}-button`).classList.remove('sel');
+
     if (!screens[screen] || screen === currentScreen) return;
   
     const current = screens[currentScreen];
     const next = screens[screen];
+    document.getElementById(`${screen}-button`).classList.add('sel');
   
     // Fade out and slide left the current screen
     current.classList.remove('opacity-100', 'translate-x-0');
@@ -30,7 +34,21 @@ function switchScreen(screen) {
     currentScreen = screen;
   }
 
+  let MAIN_DETAILS;
+  function set_main_details() {
+    fetch('/all_data')
+        .then(res => res.json())
+        .then(data => {
 
+          MAIN_DETAILS = data;
+          console.log(MAIN_DETAILS);
+        });
+}
+set_main_details();
+
+
+
+let USER_DETAILS;
   function FillCustomerFields() {
     fetch('/session_user')
         .then(res => res.json())
@@ -41,12 +59,11 @@ function switchScreen(screen) {
             //temporily set this for now
             document.getElementById("nav-status").textContent = 'basic';
             //document.getElementById("nav-status").value = user.last_name || '';
-           
+           USER_DETAILS = user;
         });
 }
 
-window.onload = FillCustomerFields;
-
+window.onload = FillCustomerFields();
 
 function openLogoutModal() {
   const modal = document.getElementById('logoutModal');
@@ -68,3 +85,9 @@ function confirmLogout() {
       .then(() => window.location.href = '/')
       .catch(err => console.error("Logout failed", err));
 }
+
+
+//highlight the scrreen that is open
+
+
+

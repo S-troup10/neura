@@ -1,3 +1,6 @@
+//if no campagns then set somthing there 
+
+
 
 
 // Function to open the modal
@@ -18,12 +21,6 @@ function closeCampaignModal() {
     }, 300); // Match the transition duration
 }
 
-
-//malke sure user does not enter a past date
-const startDateInput = document.getElementById('startDate');
-
-const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-startDateInput.setAttribute('min', today);
 
 // Function to navigate to the next section
 function nextSection(section) {
@@ -85,10 +82,24 @@ function goToFirstSection() {
 }
 const error = document.getElementById('campaign-error');
 
+
+function objectToCampaignCard(campaignData) {
+    const el = document.createElement('div');
+    el.setAttribute('data-id', campaignData.id || '');
+    el.setAttribute('data-name', campaignData.name || '');
+    el.setAttribute('data-paused', campaignData.paused ? 'true' : 'false');
+    el.setAttribute('data-dates', JSON.stringify(campaignData.dates || []));
+    el.setAttribute('data-subject', campaignData.subject || '');
+    el.setAttribute('data-body', campaignData.body || '');
+    return el;
+  }
+  
+
+
 // Function to handle form submission (for adding campaign)
 document.getElementById('addCampaignForm').addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent form from submitting normally
-    const ele = document.getElementById('appPassword');
+    const ele = document.getElementById('appPasswordContainer');
     const currentSection = document.querySelector('.form-section:not(.hidden)');
     let fieldsFilled = true;
     //check to make sure 
@@ -104,39 +115,54 @@ document.getElementById('addCampaignForm').addEventListener('submit', function(e
             });
         }
     });
-    if (ele.value.length != 16) {
-        ele.classList.add('glow-error');
-        fieldsFilled = false;
-        ele.classList.add('glow-error');
-        ele.addEventListener('click', () => {
-            ele.classList.remove('glow-error');
+
+    for (let child of ele.children) {
+        if (child.value.length == 0) {
+            child.classList.add('glow-error');
+            fieldsFilled = false;
+            child.classList.add('glow-error');
+                child.addEventListener('click', () => {
+                    for (let child of ele.children) {
+
+                        child.classList.remove('glow-error');
+                    }
         });
-        error.textContent = 'app password must be 16 characters';
-        error.style.display = 'block';
+        }
 
     }
+    
 
     if (fieldsFilled) {
             // Get form data
             const name = document.getElementById('campaignName').value;
-            const email_incriments = document.getElementById('emailDelay').value;
+
             const statusValue = document.getElementById('campaignStatus').value;
             const paused = statusValue.toLowerCase() !== 'paused';
-            const start_date = document.getElementById('startDate').value;
+
             const email = document.getElementById('email').value;
-            const app_password = document.getElementById('appPassword').value;
+            let app_password = '';
+
+            document.querySelectorAll('.single-inputs').forEach( item => {
+
+                app_password += item.value;
+            })
+            
+            
+            
 
         
-        const campaignData = {
+        let campaignData = {
            
             name,
-            email_incriments,
+            list_id: null,
             paused,
-            start_date,
+            subject: '', 
+            body : '<p><br></p>', 
+            dates: JSON.stringify([]), 
             email,
             app_password
         };
-        
+        console.log(campaignData);
         const loader = document.getElementById('loader');
 
 
@@ -160,10 +186,20 @@ document.getElementById('addCampaignForm').addEventListener('submit', function(e
             if (data.success) {
                 //add a new campain element only when server has confimred upload to db
                 error.style.display = 'none';
+
+                campaignData.id  = data.campaign_id;
+                if (campaignData.paused) {
+                    campaignData.paused = 0;
+                }
+                else {
+                    campaignData.paused = 1;
+                }
                 add_new_campaign(campaignData);
                 document.getElementById('addCampaignForm').reset();
                 goToFirstSection();
                 closeCampaignModal();
+                backToCampaignList();
+                openCampaignDetails(objectToCampaignCard(campaignData));
 
             } 
             //on fail
@@ -184,4 +220,40 @@ document.getElementById('addCampaignForm').addEventListener('submit', function(e
     }
     
 });
+
+function createPasswordInputs() {
+    const container = document.getElementById('appPasswordContainer');
+    container.innerHTML = ''; // Clear previous inputs
+
+    for (let i = 0; i < 16; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 1;
+        input.className = "single-inputs w-[6.25%] h-10 text-center bg-transparent text-gray-200 text-lg focus:outline-none border-b border-gray-600";
+
+        // Add extra margin after every 4th input (except the last one)
+        if (i % 4 === 3 && i !== 15) {
+            input.style.marginRight = '1.5rem'; // adjust the space as you like
+        }
+
+        // Auto focus next input
+        input.addEventListener('input', function () {
+            if (input.value.length === 1 && input.nextElementSibling) {
+                input.nextElementSibling.focus();
+            }
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && input.value === '' && input.previousElementSibling) {
+                input.previousElementSibling.focus();
+            }
+        });
+
+        container.appendChild(input);
+    }
+}
+
+createPasswordInputs();
+
+
 
