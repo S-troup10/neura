@@ -5,97 +5,248 @@ let currentEdit = null;
 
 const backButton = document.getElementById('backb');
 function openCampaignDetails(campaignCard) {
-  // Hide the list of campaigns
   currentEdit = campaignCard;
+
   const campaignList = document.getElementById("campaignList");
-  campaignList.classList.add("hidden");
-  backButton.style.opacity = '1';
-
-  // Show the campaign details
-  const details = document.getElementById("campaignDetails");
-  details.classList.remove("hidden");
-  showTab('emailTab');
-
+  const campaignDetails = document.getElementById("campaignDetails");
+  const backButton = document.getElementById("backb");
   const campaignTitle = document.getElementById('detailTitle');
+  const titleSection = document.getElementById('back-title-section');
+
+  const filter = document.getElementById('filter');
+
+  // Animate filter out (hide)
+  filter.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+  filter.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+
+  setTimeout(() => {
+    filter.classList.add('hidden');
+  }, 300);
+
+
+
+  // Animate campaign list out
+  campaignList.classList.remove('opacity-100', 'scale-100', 'translate-x-0');
+  campaignList.classList.add('opacity-0', 'scale-95'); // remove translate-x here
+
+  setTimeout(() => {
+  campaignList.classList.add('pointer-events-none', 'hidden');
+
+  backButton.classList.remove('opacity-0', 'pointer-events-none');
+  backButton.classList.add('opacity-100');
+  titleSection.classList.remove('hidden');
+  titleSection.classList.add('flex');
+
+  campaignDetails.classList.remove('opacity-0', 'translate-x-10', 'scale-95', 'pointer-events-none');
+  campaignDetails.classList.add('opacity-100', 'translate-x-0', 'scale-100');
+
   campaignTitle.classList.remove('hidden');
+  campaignTitle.addEventListener('click', () => title_into_input(campaignTitle));
+  }, 301);
 
-  // Determine if it's a DOM element or an object
+  // Animate campaign details in
+  
+
+  // Animate back button in
+
+
+  // Show title section after a slight delay (optional for smoothness)
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Populate data as before...
   const isElement = campaignCard instanceof HTMLElement;
-
-  // Get data values
   const name = isElement ? campaignCard.getAttribute('data-name') : campaignCard.name;
   const paused = isElement ? campaignCard.getAttribute('data-paused') === 'true' : !!campaignCard.paused;
-  let dates;
-  if (isElement) {
-
-    const rawDates = campaignCard.getAttribute('data-dates');
-   
-    dates = rawDates ? JSON.parse(rawDates) : [];
-  } else {
-    dates = campaignCard.dates || [];
-  }
-
-  let list_id;
-  if (isElement) {
-
-    const raw_lists = campaignCard.getAttribute('data-list_id');
-   
-    list_id = raw_lists ? JSON.parse(raw_lists) : [];
-  } else {
-    list_id = campaignCard.list_id || [];
-  }
-  
+  const schedule = isElement ? JSON.parse(campaignCard.getAttribute('data-schedule') || '[]') : campaignCard.schedule || [];
+  const list_id = isElement ? JSON.parse(campaignCard.getAttribute('data-list_id') || '[]') : campaignCard.list_id || [];
   const subject = isElement ? campaignCard.getAttribute('data-subject') : campaignCard.subject || '';
   const body = isElement ? campaignCard.getAttribute('data-body') : campaignCard.body || '';
-  
+
+  campaignTitle.textContent = name;
+  setSelectedDates(schedule);
   render_ListsTable();
   apply_selected_ids_to_list(list_id);
-
-  // Apply values to the form
-  campaignTitle.textContent = name;
   document.getElementById("check-paused").checked = paused;
-  setSelectedDates(dates);
   document.getElementById('email-subject').value = subject;
-  quill.root.innerHTML = body;
+
+  
+if (/<style[\s\S]*?>[\s\S]*?<\/style>/.test(body)) {
+  Toggle_quill(false);
+  console.log('returned true, switch to grapes js');
+}
+else {
+  Toggle_quill(true);
 }
 
+  
+  quill.root.innerHTML = body;
+  setEmailHtml(body);
+
+  setTimeout(() => {
+
+    showTab('emailTab');
+  }, 350);
+}
 
 
 function backToCampaignList() {
-  currentEdit = null;
-  // Show the list of campaigns
-  const campaignList = document.getElementById("campaignList");
-  campaignList.classList.remove("hidden");
-  backButton.style.opacity = '0';
-  // Hide the campaign details
-  const details = document.getElementById("campaignDetails");
-  details.classList.add("hidden");
-  const campaignTitle = document.getElementById('detailTitle');
-  campaignTitle.classList.add('hidden');
+  const details = document.getElementById('campaignDetails');
+  const list = document.getElementById('campaignList');
+  const backButton = document.getElementById('backb');
+  const title = document.getElementById('detailTitle');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const filter = document.getElementById('filter');
+  const titleSection = document.getElementById('back-title-section');
+
+  // Animate campaignDetails out
+  details.classList.remove('opacity-100', 'translate-x-0', 'scale-100');
+  details.classList.add('opacity-0', 'translate-x-10', 'scale-95');
+
+  // After animation finishes, hide and disable interaction
+  setTimeout(() => {
+    details.classList.add('pointer-events-none');
+  }, 300);
+
+
+
+  // Show filter before animation
+  filter.classList.remove('hidden', 'pointer-events-none', 'opacity-0', 'scale-95');
+
+  // Force reflow
+  void filter.offsetWidth;
+
+  // Animate filter in
+  filter.classList.add('opacity-100');
+
+
+  // Reveal campaignList smoothly
+  list.classList.remove('hidden', 'pointer-events-none');
+  void list.offsetWidth; // trigger reflow
+
+  list.classList.remove('opacity-0', 'scale-95', 'translate-x-[-10px]');
+  list.classList.add('opacity-100', 'scale-100', 'translate-x-0', 'pointer-events-auto');
+
+  // Hide title section with animation
+  titleSection.classList.remove('flex');
+  // Optional: fade out before hiding
+  titleSection.classList.add('opacity-0');
+  
+    titleSection.classList.add('hidden');
+    titleSection.classList.remove('opacity-0');
+  
+
+  // Hide back button
+  backButton.classList.add('opacity-0', 'pointer-events-none');
+  backButton.classList.remove('opacity-100');
+
+  // Hide title
+  title.classList.add('hidden');
+
+  // Hide all tab content
+  tabContents.forEach(tab => {
+    tab.classList.add('hidden', 'opacity-0');
+    tab.classList.remove('opacity-100');
+  });
 }
+
+
+
+function title_into_input(ele) {
+  const currentText = ele.textContent.trim();
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = currentText;
+
+  // Copy font styling but strip bold gradient effects
+  input.className = ele.className;
+  input.classList.remove(
+    'bg-gradient-to-r',
+    'from-blue-400',
+    'to-purple-500',
+    'text-transparent',
+    'bg-clip-text'
+  );
+
+  // Add subtle inline styles
+  input.style.background = 'transparent';
+  input.style.border = 'none';
+  input.style.outline = 'none';
+  input.style.fontSize = '1.5rem'; // roughly text-2xl
+  input.style.fontWeight = 'bold';
+  input.style.marginLeft = '1rem';
+  input.style.color = '#FAF9F6';
+
+  input.addEventListener('blur', () => {
+    const newText = input.value.trim() || 'Untitled';
+    ele.textContent = newText;
+
+    // Reapply gradient classes
+    ele.classList.add(
+      'bg-gradient-to-r',
+      'from-blue-400',
+      'to-purple-500',
+      'text-transparent',
+      'bg-clip-text'
+    );
+
+    input.replaceWith(ele);
+  });
+ 
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') input.blur();
+  });
+
+  ele.replaceWith(input);
+  input.focus();
+}
+
 
 //code to managhe the editing of campigns including setting an email and determining the list of people to send it to 
 function showTab(tabId) {
-  // Hide all tab contents
+  // Hide all tabs by adding 'hidden' and removing opacity
   document.querySelectorAll('.tab-content').forEach(tab => {
     tab.classList.add('hidden');
+    tab.classList.remove('opacity-100');
+    tab.classList.add('opacity-0');
   });
 
-  // Remove active-tab class from all buttons
-  document.querySelectorAll('.tab-button').forEach(btn => {
-    btn.classList.remove('active-tab');
-  });
+  // Show the selected tab by removing 'hidden' and adding opacity
+  const selectedTab = document.getElementById(tabId);
+  if (selectedTab) {
+    selectedTab.classList.remove('hidden');
+    setTimeout(() => {
+      selectedTab.classList.add('opacity-100'); // Fade in the active tab
+    }, 10);  // Small delay to trigger opacity transition
+  }
 
-  // Show the selected tab
-  document.getElementById(tabId).classList.remove('hidden');
-
-  // Find the button that matches the tabId by its text
-  document.querySelectorAll('.tab-button').forEach(btn => {
+  // Optionally: Activate the corresponding tab button
+  document.querySelectorAll('.tab--button').forEach(btn => {
     if (btn.getAttribute('onclick')?.includes(tabId)) {
       btn.classList.add('active-tab');
+    } else {
+      btn.classList.remove('active-tab');
     }
   });
 }
+
+
+
+
+
+
+
 
 
 
@@ -138,6 +289,8 @@ function showTab(tabId) {
 
     function add_list_button() {
       switchScreen('lists');
+      setTimeout( () => {openAddListModal();}, 1200);
+      
     }
 
     //start of the list selcition
@@ -246,351 +399,91 @@ function showTab(tabId) {
     }
 
 
-const timeModal = document.getElementById("timeModal");
-const modalDateText = document.getElementById("modal-date");
-const calendarEl = document.getElementById("calendar");
-const calendarTitleEl = document.getElementById("calendar-title");
-const selectedDatesEl = document.getElementById("selectedDates");
-const unselectButton = document.getElementById('unselect-time');
-
-let currentDateForModal = null;
-let selectedDates = new Set();
-let dateTimes = {};
-let currentMonth = new Date().getMonth();
-let currentYear = new Date().getFullYear();
-let isAM = true; // AM/PM toggle
-
-// Open modal for selected date
-function openTimeModal(dateStr) {
-  currentDateForModal = dateStr;
-  modalDateText.textContent = dateStr;
-
-  const [hour, minute] = (dateTimes[dateStr] || "09:00").split(":");
-
-  if (selectedDates.has(currentDateForModal)) {
-    unselectButton.style.opacity = '1';
-  } else {
-    unselectButton.style.opacity = '0';
-  }
-
-
-  // Set the initial values in the modal
-  document.getElementById("selected-hour").textContent = formatHour(hour);
-  document.getElementById("selected-minute").textContent = minute;
-  updateAmPmButton();
-
-  timeModal.classList.remove("hidden");
-}
-
-// Close modal
-function closeTimeModal() {
-  timeModal.classList.add("hidden");
-  currentDateForModal = null;
-}
-
-function unselect_time() {
-  selectedDates.delete(currentDateForModal);  // Remove the current date from the selected set
-  dateTimes[currentDateForModal] = undefined; // Clear the time associated with that date
-  renderCalendar(currentYear, currentMonth);  // Re-render the calendar
-  updateSelectedDatesDisplay();
-  closeTimeModal();  // Close the modal
-}
-
-
-// Save selected time
-function saveTime() {
-  const hour = document.getElementById("selected-hour").textContent;
-  const minute = document.getElementById("selected-minute").textContent;
-  const time = `${hour}:${minute}`;
-  if (currentDateForModal) {
-    dateTimes[currentDateForModal] = time;
-    selectedDates.add(currentDateForModal);
-    renderCalendar(currentYear, currentMonth);
-    updateSelectedDatesDisplay();
-    closeTimeModal();
-  }
-}
-
-// Change hour
-function changeHour(amount) {
-  const hourElement = document.getElementById("selected-hour");
-  let currentHour = parseInt(hourElement.textContent);
-  currentHour = (currentHour + amount + 12) % 12; // wrap around for 12-hour format
-  hourElement.textContent = formatHour(currentHour);
-}
-
-// Change minute
-function changeMinute(amount) {
-  const minuteElement = document.getElementById("selected-minute");
-  let currentMinute = parseInt(minuteElement.textContent);
-  currentMinute = (currentMinute + amount + 60) % 60; // wrap around
-  minuteElement.textContent = currentMinute.toString().padStart(2, "0");
-}
-
-// Toggle AM/PM
-function toggleAmPm() {
-  isAM = !isAM;
-  updateAmPmButton();
-  const hourElement = document.getElementById("selected-hour");
-  let currentHour = parseInt(hourElement.textContent);
-  hourElement.textContent = formatHour(currentHour);
-}
-
-// Update AM/PM button text
-function updateAmPmButton() {
-  const amPmButton = document.getElementById("am-pm-button");
-  amPmButton.textContent = isAM ? "AM" : "PM";
-}
-
-// Format hour to 12-hour format
-function formatHour(hour) {
-  hour = parseInt(hour);
-  if (isAM && hour === 0) {
-    return "12"; // 12 AM
-  } else if (!isAM && hour === 0) {
-    return "12"; // 12 PM
-  } else if (hour > 12) {
-    return (hour - 12).toString(); // PM hours
-  } else {
-    return hour.toString().padStart(2, "0"); // AM hours
-  }
-}
-
-// Render calendar
-function renderCalendar(year, month) {
-  calendarTitleEl.textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
-
-  calendarEl.innerHTML = `
-  <div class="font-semibold">Sun</div>
-  <div class="font-semibold">Mon</div>
-  <div class="font-semibold">Tue</div>
-  <div class="font-semibold">Wed</div>
-  <div class="font-semibold">Thu</div>
-  <div class="font-semibold">Fri</div>
-  <div class="font-semibold">Sat</div>
-`;
-
-
-  for (let i = 0; i < firstDay; i++) {
-    calendarEl.appendChild(document.createElement("div"));
-  }
-
-  for (let date = 1; date <= lastDate; date++) {
-    const thisDate = new Date(year, month, date);
-    thisDate.setHours(0, 0, 0, 0);
-    const iso = thisDate.toISOString().split("T")[0];
-
-    const day = document.createElement("div");
-    day.className = "day p-3 rounded-lg bg-gray-700 hover:bg-purple-500 cursor-pointer transition";
-
-    if (thisDate < today) {
-      day.classList.add("opacity-30", "cursor-not-allowed");
-      day.textContent = date;
-      calendarEl.appendChild(day);
-      continue;
-    }
-
-    if (selectedDates.has(iso)) {
-      day.classList.add("bg-purple-600");
-      day.innerHTML = `<div class="text-sm">${date}</div><div class="text-xs text-gray-300">${dateTimes[iso]}</div>`;
-    } else {
-      day.textContent = date;
-    }
-
-    day.onclick = () => openTimeModal(iso);
-    calendarEl.appendChild(day);
-  }
-}
-
-
-
-// Month navigation
-function changeMonth(offset) {
-  currentMonth += offset;
-  if (currentMonth < 0) {
-    currentMonth = 11;
-    currentYear -= 1;
-  } else if (currentMonth > 11) {
-    currentMonth = 0;
-    currentYear += 1;
-  }
-  renderCalendar(currentYear, currentMonth);
-}
-
-// Update selected dates display
-function updateSelectedDatesDisplay() {
-  const arr = Array.from(selectedDates).sort();
-  selectedDatesEl.innerHTML = "";
-
-  if (!arr.length) {
-    selectedDatesEl.textContent = "No dates selected";
-    return;
-  }
-
-  selectedDatesEl.className = "mt-6 text-sm text-gray-300 flex flex-wrap gap-x-8 gap-y-1";
-
-  arr.forEach((d) => {
-    const item = document.createElement("div");
-    item.textContent = `${d} @ ${dateTimes[d] || 'unspecified'}`;
-    selectedDatesEl.appendChild(item);
-  });
-}
-
-
-// Confirm selection (stub)
-function confirmDates() {
-  const dates = Array.from(selectedDates);
-  const sendTimes =  dates.map(d => `${d} ${dateTimes[d]}`);
-  return sendTimes;
-  //alert("Send dates confirmed:\n" + dates.map(d => `${d} @ ${dateTimes[d]}`).join("\n"));
-}
-
-
-function setSelectedDates(dates) {
-
-  if (typeof dates === 'string') {
-    try {
-      dates = JSON.parse(dates);
-    } catch (e) {
-      console.error("Failed to parse dates string:", dates);
-      return;
-    }
-  }
-  if (!Array.isArray(dates)) {
-    // no dates
-    console.log(dates);
-    return;
-  }
-
-
-    selectedDates.clear();
-  
-  dateTimes = {};
-
-  if (dates != null && dates.length != 0) {
-    dates.forEach(dt => {
-      const [date, time] = dt.split(" ");
-      selectedDates.add(date);
-      dateTimes[date] = time || "09:00"; // Default to 09:00 if time is missing
-    });
-  }
-  
-  renderCalendar(currentYear, currentMonth);
-  updateSelectedDatesDisplay();
-}
-
-
-
-
-// Init
-renderCalendar(currentYear, currentMonth);
-
-// Event listeners for buttons
-document.getElementById("hour-increase").addEventListener("click", () => changeHour(1));
-document.getElementById("hour-decrease").addEventListener("click", () => changeHour(-1));
-document.getElementById("minute-increase").addEventListener("click", () => changeMinute(5));
-document.getElementById("minute-decrease").addEventListener("click", () => changeMinute(-5));
-document.getElementById("save-time").addEventListener("click", saveTime);
-document.getElementById("am-pm-button").addEventListener("click", toggleAmPm);
-document.getElementById("unselect-time").addEventListener("click", unselect_time);
-
-
-
-
-
-
-
-
-function saveEmailList() {
-  return selectedListId;
-}
 
 
 function saveEditedCampaign() {
+  loader.style.display = 'flex';
+
   const subject = document.getElementById('email-subject').value;
-  const body = quill.root.innerHTML;
+
+let body = null;
+// if quill 
+  if (is_quill == true) {
+    body = quill.root.innerHTML;
+  }
+  else {
+    body = getEmailHtml();
+  }
+  console.log('body : ', body, '|  status :', is_quill);
+
+
+
   const paused = document.getElementById('check-paused').checked;
 
-  const list = JSON.stringify(saveEmailList());
-  const dates = JSON.stringify(confirmDates());
+  const list = selectedListId ? JSON.stringify(selectedListId) : JSON.stringify([]);
+
+  const id = currentEdit instanceof HTMLElement ? currentEdit.getAttribute('data-id') : currentEdit.id;
   const name = document.getElementById('detailTitle').innerText;
-  console.log(USER_DETAILS);
   const user_id = USER_DETAILS.id;
 
-  const data = {
-    id: currentEdit instanceof HTMLElement 
-    ? currentEdit.getAttribute('data-id') 
-    : currentEdit.id,
+  // ✅ Use confirmDates to process the schedule changes
+  const schedule = confirmDates(id);
 
+  const campaignData = {
+    id,
     name,
     subject,
     body,
-    list_id : list,
-    dates,
+    list_id: list,
     paused,
-    user_id,
+    user_id
   };
 
   const data_to_server = {
-    table : 'campaigns', 
-    data,
-    primary_key : 'id',
-  }
-  
+    campaign: campaignData,
+    schedule: schedule
+  };
 
-  fetch('/update', {
+  console.log('Sending schedule:', schedule);
+
+  fetch('/api/save_campaign', {
     method: 'POST',
     headers: {
-        'Content-Type': 'application/json'
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(data_to_server) 
-})
-.then(response => {
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
-  }
-  return response.json();
-})
-.then(responseData => {   // <- change this to 'responseData'
-  if (responseData.success) {
-    if (currentEdit) {
-      // Use the 'data' you already created earlier (NOT the server response)
+    body: JSON.stringify(data_to_server)
+  })
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    return response.json();
+  })
+  .then(responseData => {
+    if (responseData.success === true) {
+      if (currentEdit) {
+        currentEdit.setAttribute('data-name', campaignData.name);
+        currentEdit.setAttribute('data-subject', campaignData.subject);
+        currentEdit.setAttribute('data-body', campaignData.body);
+        currentEdit.setAttribute('data-list_id', campaignData.list_id);
+        currentEdit.setAttribute('data-paused', campaignData.paused);
+        //campaignData.schedule = return_server_like_schedule(id); //here pass in the data in the same vaaion as the servrer
+        console.log('sever returniong ', responseData.data);
+        campaignData.schedule = responseData.data;
+        currentEdit.setAttribute('data-schedule', JSON.stringify(campaignData.schedule));
+        resetScheduleTracking();
 
-      currentEdit.setAttribute('data-name', data.name);
-      currentEdit.setAttribute('data-subject', data.subject);
-      currentEdit.setAttribute('data-body', data.body);
-      currentEdit.setAttribute('data-list_id', data.list_id); // already JSON string
-      currentEdit.setAttribute('data-dates', data.dates);  // already JSON string
-      currentEdit.setAttribute('data-paused', data.paused);
-
-      currentEdit.innerHTML = generateCampaignCardHTML(data); 
-      backToCampaignList();
+        currentEdit.innerHTML = generateCampaignCardHTML(campaignData);
+        backToCampaignList();
+        showToast('Campaign Saved Successfully');
+        render_next_send();
+      }
+    } else {
+      console.log('Server responded with error:', responseData.error);
     }
-  } else {
-    console.log(responseData.error);
-  }
-})
-.catch(error => {
-  console.error('Error updating campaign:', error);
-});
-
-
-
-  
-  
-  //functionality to save to db
-  
-  //get the campagin card
- 
-
-  //change its attributes
-
-  
-  
+    loader.style.display = 'none';
+  })
+  .catch(error => {
+    console.error('Error updating campaign:', error);
+    loader.style.display = 'none';
+  });
 }
+

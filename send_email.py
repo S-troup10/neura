@@ -98,11 +98,61 @@ def confirmationEmail(email, name):
     msg.add_alternative(html, subtype='html')
     
     
-    sendEmail(msg)
+    sendEmail(msg, FROM, APP_PASSWORD)
 
-def sendEmail(msg):
+def sendEmail(msg, email , app_password):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(FROM, APP_PASSWORD)  # Use App Password, not your normal one
+        smtp.login(email, app_password)  # Use App Password, not your normal one
         smtp.send_message(msg)
         print('message sent')
         
+def compose_and_send_email(email, password) :
+  msg = EmailMessage()
+  msg['Subject'] = f'Thank you for Joining Neura'
+  msg['From'] = FROM
+  msg['To'] = email
+  msg.set_content('This is the body of the email.')   
+        
+
+
+import smtplib
+import base64
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+def send_email_oauth2(to_emails, subject, from_email, access_token, body_html):
+    if isinstance(to_emails, str):
+        to_emails = [to_emails]
+
+    # Create the MIME message
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = from_email
+    message["To"] = "You"
+
+    # Attach the HTML body
+    html_part = MIMEText(body_html, "html")
+    message.attach(html_part)
+
+    # Build the OAuth2 string
+    auth_string = f"user={from_email}\1auth=Bearer {access_token}\1\1"
+    auth_bytes = auth_string.encode("utf-8")
+    auth_encoded = base64.b64encode(auth_bytes).decode("utf-8")
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.docmd("AUTH", "XOAUTH2 " + auth_encoded)
+            server.sendmail(from_email, to_emails, message.as_string())  # real recipients
+        print('email sent')
+        return True
+    except smtplib.SMTPAuthenticationError as e:
+        print("❌ Authentication error:", e.smtp_error.decode())
+        return False
+    except Exception as e:
+        print("❌ Failed to send email:", str(e))
+        return False
+
+

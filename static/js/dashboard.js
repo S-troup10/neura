@@ -1,5 +1,28 @@
 let currentScreen = 'dashboard';
 
+
+
+
+
+
+
+// On page load
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.slice(1); // e.g. "settings"
+  if (hash) {
+    switchScreen(hash);
+    switchSettingsTab('connect');
+
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
+  else {
+    switchSettingsTab('account');
+  }
+});
+
+
+
+
 const screens = {
   dashboard: document.getElementById('dashboard'),
   campaigns: document.getElementById('campaigns'),
@@ -34,34 +57,11 @@ function switchScreen(screen) {
     currentScreen = screen;
   }
 
-  let MAIN_DETAILS;
-  function set_main_details() {
-    fetch('/all_data')
-        .then(res => res.json())
-        .then(data => {
-
-          MAIN_DETAILS = data;
-          console.log(MAIN_DETAILS);
-        });
-}
-set_main_details();
+  
 
 
 
-let USER_DETAILS;
-  function FillCustomerFields() {
-    fetch('/session_user')
-        .then(res => res.json())
-        .then(user => {
-          console.log(user);
-          document.getElementById("nav-name").textContent = `${user.first_name} ${user.last_name}` || '';
-          
-            //temporily set this for now
-            document.getElementById("nav-status").textContent = 'basic';
-            //document.getElementById("nav-status").value = user.last_name || '';
-           USER_DETAILS = user;
-        });
-}
+
 
 window.onload = FillCustomerFields();
 

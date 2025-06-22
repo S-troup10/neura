@@ -2,18 +2,42 @@
 
 
 
-
 function openAddListModal() {
-  document.getElementById("add-list-modal").classList.remove("hidden");
+  const modal = document.getElementById("add-list-modal");
   const name = document.getElementById("new-list-name");
   const description = document.getElementById("list-description");
+
+  // Reset inputs
   name.value = '';
   description.value = '';
+
+  // Unhide & animate in
+  modal.classList.remove("hidden");
+  modal.style.opacity = "0";
+  modal.style.transform = "scale(0.95)";
+  modal.style.transition = "opacity 300ms ease, transform 300ms ease";
+
+  requestAnimationFrame(() => {
+    modal.style.opacity = "1";
+    modal.style.transform = "scale(1)";
+  });
 }
+
 function closeAddListModal() {
-  document.getElementById("add-list-modal").classList.add("hidden");
+  const modal = document.getElementById("add-list-modal");
+
+  // Animate out
+  modal.style.opacity = "0";
+  modal.style.transform = "scale(0.95)";
+
+  // Wait for animation to finish, then hide
+  setTimeout(() => {
+    modal.classList.add("hidden");
+  }, 300); // Match the 300ms transition duration
 }
+
 async function submitNewList() {
+  loader.style.display = 'flex';
   const name = document.getElementById("new-list-name").value.trim();
   const description = document.getElementById("list-description").value.trim();
 
@@ -46,12 +70,14 @@ async function submitNewList() {
       list_headers.push(list_data);           // Add to your frontend list
       renderListsTable();  
       render_ListsTable();                 // Refresh table view
-
+      showToast('List Created Successfully');
     } else {
       console.error(response.error || "Unknown error from server.");
     }
+    loader.style.display = 'none';
   } catch (err) {
     console.error("Network or server error:", err);
+    loader.style.display = 'none';
   }
 
   closeAddListModal();
@@ -99,7 +125,6 @@ function populate_lists() {
 
 }
 
-window.addEventListener("load", populate_lists);
 
 
 //for saving / retiving lists 
@@ -133,21 +158,26 @@ function renderListsTable(filteredLists = list_headers) {
 
   filteredLists.forEach(list => {
     const row = document.createElement('tr');
-    row.className = "hover:bg-gray-700 cursor-pointer transition-all list-row";
+    row.className = "hover:bg-gray-700 cursor-pointer list-row group transition-all duration-200 ease-in-out";
 
     row.onclick = () => list_select_list_row(row, list.id);
     const count = list.count;
-    row.innerHTML = `
-    
-      <td class="py-4 px-6 font-semibold">${list.name}</td>
-      <td class="py-4 px-6">${count}</td>
-    `;
+row.innerHTML = `
+  <td class="py-4 px-6 font-semibold text-gray-100 group-hover:text-white transition-colors duration-200">
+    ${list.name}
+  </td>
+  <td class="py-4 px-6 text-gray-300 group-hover:text-white transition-colors duration-200">
+    ${count}
+  </td>
+`;
+
+
     tableBody.appendChild(row);
   });
 }
 
 // Call it once to render initially
-renderListsTable();
+
 
 
 let selectedList = null;
@@ -198,41 +228,64 @@ async function fetchEmailsForList(listId) {
 
 
 async function openEditPanel(listId, listDetails) {
+  selectedList = listDetails;
 
+  // Update static info
+  document.getElementById("edit-list-title").textContent = listDetails.name || "Unnamed List";
+  document.getElementById("edit-list-description").textContent = listDetails.description || "No description";
+  document.getElementById("edit-list-count").textContent = "...";
 
+  // Show panel right away
+  document.getElementById("edit-list-overlay").classList.remove("hidden");
+  document.getElementById("edit-list-panel").classList.remove("translate-x-full");
+
+  const emailsContainer = document.getElementById("edit-list-emails");
+
+  // Show Tailwind loading spinner
+  emailsContainer.innerHTML = `
+    <div class="flex justify-center items-center py-8 animate-fade-in">
+      <div class="flex flex-col items-center space-y-2 text-gray-400">
+        <div class="w-6 h-6 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+        <span class="text-sm">Loading emails...</span>
+      </div>
+    </div>
+  `;
+
+  // Load emails
   let emails;
-
   if (list_cache[listId]) {
     emails = list_cache[listId];
   } else {
-    emails = await fetchEmailsForList(listId);
+    try {
+      emails = await fetchEmailsForList(listId);
+      list_cache[listId] = emails; // Cache it
+    } catch (err) {
+      emailsContainer.innerHTML = `
+        <div class="text-red-500 text-center py-4">Failed to load emails.</div>
+      `;
+      document.getElementById("edit-list-count").textContent = "0";
+      return;
+    }
   }
-  
 
   listDetails.emails = emails;
-  selectedList = listDetails;
+  document.getElementById("edit-list-count").textContent = emails.length;
 
-  document.getElementById("edit-list-title").textContent = listDetails.name || "Unnamed List";
-  document.getElementById("edit-list-description").textContent = listDetails.description || "No description";
-  document.getElementById("edit-list-count").textContent = listDetails.emails?.length || 0;
-
-  const emailsContainer = document.getElementById("edit-list-emails");
-  emailsContainer.innerHTML = "";
-  
-  if (listDetails.emails.length > 0) {
-    listDetails.emails.forEach(email => {
+  // Populate email list
+  if (emails.length > 0) {
+    emailsContainer.innerHTML = "";
+    emails.forEach(email => {
       const uniqueId = email.temp || email.id;
       const li = document.createElement("li");
       append_email_element(li, email.name, email.email, email.company, uniqueId);
     });
-    
   } else {
-    emailsContainer.innerHTML = "<div class='no-email-tag text-gray-500'>No emails in this list.</div>";
+    emailsContainer.innerHTML = `
+      <div class="text-gray-400 text-center py-4">No emails in this list.</div>
+    `;
   }
-
-  document.getElementById("edit-list-overlay").classList.remove("hidden");
-  document.getElementById("edit-list-panel").classList.remove("translate-x-full");
 }
+
 
 function closeEditPanel(dontsave = false) {
 
@@ -284,6 +337,9 @@ function saveEditedList() {
     console.log('no data to send to server');
   }
   else {
+    console.log(loader);
+    
+    
     fetch('/save-lists', {
       method: 'POST',
       headers: {
@@ -315,14 +371,16 @@ function saveEditedList() {
       
       
       
-
+    showToast('List Saved Successfully');
   
       to_add.length = 0;
       to_update.length = 0;
       to_delete.length = 0;
+      
     })
     .catch(err => {
       ErrorModal(err);
+      
     });
   }
 
@@ -495,6 +553,7 @@ const email_ele = document.getElementById("new-email");
       ErrorModal('enter a valid email');
       return;
     }
+    
     const updated_record = { list_id, email, name, company, id };
 
     // Determine if it's a temp ID or a permanent one

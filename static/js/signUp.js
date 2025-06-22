@@ -55,7 +55,7 @@ function OnPasswordChange() {
         eyeIcon.style.display = 'block';
         relay.style.display = 'block';
 
-        if (password.value.length < 7) {
+        if (password.value.length < 8) {
             relay.textContent = 'Password must be 8 characters or longer';
             valid = false;
             pt.classList.add('hidden');
@@ -158,8 +158,8 @@ function Submit() {
     }   
 
     const user = {
-        firstName: firstName.value,
-        lastName: lastName.value,
+        first_name: firstName.value,
+        last_name: lastName.value,
         email: email.value,
         password: password.value
     }
@@ -185,7 +185,7 @@ function Submit() {
         })
         .then(data => {
             console.log(data.message);  // Optional
-            if (data.success) {  // 🔍 Make sure your Flask backend uses "success", not "sucsess"
+            if (data.success) {  // 
                 console.log('redirectging to ');
                 window.location.replace("/dashboard");
             } else {

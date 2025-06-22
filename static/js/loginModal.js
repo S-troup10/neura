@@ -82,7 +82,8 @@ function AttemptLogin() {
 }
 
 function Login(email, password) {
-    fetch("/login", {
+    document.getElementById('loader').style.display = 'flex';
+    fetch("http://127.0.0.1:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, password: password }),
@@ -100,17 +101,23 @@ function Login(email, password) {
                 window.location.replace("/dashboard");  // or href
                 // You can redirect or show a success message here
             } else {
-                onFail();
+                onFail(data.message);
                 // Show an error to the user
             }
+            document.getElementById('loader').style.display = 'none';
         })
-        .catch((error) => console.error("Error:", error));
+        .catch((error) => {
+            document.getElementById('loader').style.display = 'none';
+            console.error("Error:", error);});
+
+        
 }
 const fail = document.getElementById('fail');
 
-function onFail() {
+function onFail(msg) {
     //display somthing here when user gets the credintails wrong
     //display the element 
+    document.getElementById('fail').textContent = msg;
     document.getElementById('fail').classList.add('show');
 
 }

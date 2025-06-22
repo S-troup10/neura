@@ -30,7 +30,7 @@
   </div>
 
   <!-- Quill.js -->
- 
+ <script>
 
     document.getElementById('save-content').addEventListener('click', function () {
       const emailContent = quill.root.innerHTML;
@@ -39,3 +39,38 @@
   </script>
 </body>
 </html>
+
+
+function createPasswordInputs() {
+    const container = document.getElementById('appPasswordContainer');
+    container.innerHTML = ''; // Clear previous inputs
+
+    for (let i = 0; i < 16; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 1;
+        input.className = "single-inputs w-[6.25%] h-10 text-center bg-transparent text-gray-200 text-lg focus:outline-none border-b border-gray-600";
+
+        // Add extra margin after every 4th input (except the last one)
+        if (i % 4 === 3 && i !== 15) {
+            input.style.marginRight = '1.5rem'; // adjust the space as you like
+        }
+
+        // Auto focus next input
+        input.addEventListener('input', function () {
+            if (input.value.length === 1 && input.nextElementSibling) {
+                input.nextElementSibling.focus();
+            }
+        });
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && input.value === '' && input.previousElementSibling) {
+                input.previousElementSibling.focus();
+            }
+        });
+
+        container.appendChild(input);
+    }
+}
+
+createPasswordInputs();

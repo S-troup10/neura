@@ -1,86 +1,57 @@
 //if no campagns then set somthing there 
 
+  let isPaused = true;
 
+  function togglePausedStatus() {
+    isPaused = !isPaused;
 
+    const btn = document.getElementById("pauseToggleBtn");
+    const text = document.getElementById("statusText");
+    const icon = document.getElementById("statusIcon");
 
-// Function to open the modal
-function openCampaignModal() {
-    const modal = document.getElementById('addCampaignModal');
-    modal.classList.remove('hidden');
+    if (isPaused) {
+      text.textContent = "Paused";
+      icon.className = "fas fa-pause";
+      btn.classList.remove("bg-green-600", "hover:bg-green-500");
+      btn.classList.add("bg-blue-700", "hover:bg-blue-600");
+    } else {
+      text.textContent = "Active";
+      icon.className = "fas fa-play";
+      btn.classList.remove("bg-blue-700", "hover:bg-blue-600");
+      btn.classList.add("bg-green-600", "hover:bg-green-500");
+    }
+  }
+
+  function getPausedStatus() {
+    return isPaused;
+  }
+
+  function openCampaignModal() {
+    const modal = document.getElementById("addCampaignModal");
+    const container = document.getElementById("campaignModalContainer");
+
+    modal.classList.remove("hidden");
+    requestAnimationFrame(() => {
+      container.classList.remove("scale-90", "opacity-0");
+      container.classList.add("scale-100", "opacity-100");
+    });
+  }
+
+  function closeCampaignModal() {
+    const modal = document.getElementById("addCampaignModal");
+    const container = document.getElementById("campaignModalContainer");
+
+    container.classList.remove("scale-100", "opacity-100");
+    container.classList.add("scale-90", "opacity-0");
+
     setTimeout(() => {
-        modal.querySelector('#addCampaignModalContent').classList.remove('opacity-0', 'scale-95');
-    }, 10);
-}
-
-// Function to close the modal
-function closeCampaignModal() {
-    const modal = document.getElementById('addCampaignModal');
-    modal.querySelector('#addCampaignModalContent').classList.add('opacity-0', 'scale-95');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300); // Match the transition duration
-}
-
-
-// Function to navigate to the next section
-function nextSection(section) {
-    // Hide current section
-
-    //check if elements are filled out first
-
-    let _continue = true
-    const currentSection = document.querySelector('.form-section:not(.hidden)');
-    const fields = currentSection.querySelectorAll('input, textarea');
-    fields.forEach(field => {
-        if (field.value.length == 0) {
-            _continue = false
-            field.classList.add('glow-error');
-
-            //when clicked it will return to normal
-            field.addEventListener('click', () => {
-                field.classList.remove('glow-error');
-            });
-        }
-      });
-    
-    if (_continue) {
-        currentSection.classList.add('hidden');
-    
-    // Show next section
-    const nextSection = document.getElementById('section' + section);
-    nextSection.classList.remove('hidden');
-    }
-    
-}
+      modal.classList.add("hidden");
+    }, 300);
+  }
 
 
 
-// Function to navigate to the previous section
-function prevSection(section) {
-    // Hide current section
-    const currentSection = document.querySelector('.form-section:not(.hidden)');
-    currentSection.classList.add('hidden');
-    
-    // Show previous section
-    const prevSection = document.getElementById('section' + section);
-    prevSection.classList.remove('hidden');
-}
 
-
-function goToFirstSection() {
-    // Hide currently visible section
-    const currentSection = document.querySelector('.form-section:not(.hidden)');
-    if (currentSection) {
-        currentSection.classList.add('hidden');
-    }
-
-    // Show the first section (assuming its id is 'section1')
-    const firstSection = document.getElementById('section1');
-    if (firstSection) {
-        firstSection.classList.remove('hidden');
-    }
-}
-const error = document.getElementById('campaign-error');
 
 
 function objectToCampaignCard(campaignData) {
@@ -88,7 +59,7 @@ function objectToCampaignCard(campaignData) {
     el.setAttribute('data-id', campaignData.id || '');
     el.setAttribute('data-name', campaignData.name || '');
     el.setAttribute('data-paused', campaignData.paused ? 'true' : 'false');
-    el.setAttribute('data-dates', JSON.stringify(campaignData.dates || []));
+    el.setAttribute('data-schedule', []);
     el.setAttribute('data-subject', campaignData.subject || '');
     el.setAttribute('data-body', campaignData.body || '');
     return el;
@@ -97,13 +68,11 @@ function objectToCampaignCard(campaignData) {
 
 
 // Function to handle form submission (for adding campaign)
-document.getElementById('addCampaignForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form from submitting normally
-    const ele = document.getElementById('appPasswordContainer');
-    const currentSection = document.querySelector('.form-section:not(.hidden)');
+function submitNewCampaign() {
+
     let fieldsFilled = true;
     //check to make sure 
-    const fields = currentSection.querySelectorAll('input, textarea');
+    const fields = document.getElementById('addCampaignModal').querySelectorAll('input');
     fields.forEach(field => {
         if (field.value.length == 0) {
            
@@ -116,36 +85,18 @@ document.getElementById('addCampaignForm').addEventListener('submit', function(e
         }
     });
 
-    for (let child of ele.children) {
-        if (child.value.length == 0) {
-            child.classList.add('glow-error');
-            fieldsFilled = false;
-            child.classList.add('glow-error');
-                child.addEventListener('click', () => {
-                    for (let child of ele.children) {
-
-                        child.classList.remove('glow-error');
-                    }
-        });
-        }
-
-    }
     
 
     if (fieldsFilled) {
+            document.getElementById('loader').style.display = 'flex';
             // Get form data
             const name = document.getElementById('campaignName').value;
 
-            const statusValue = document.getElementById('campaignStatus').value;
-            const paused = statusValue.toLowerCase() !== 'paused';
+            const paused = getPausedStatus()
 
-            const email = document.getElementById('email').value;
-            let app_password = '';
 
-            document.querySelectorAll('.single-inputs').forEach( item => {
 
-                app_password += item.value;
-            })
+
             
             
             
@@ -154,20 +105,14 @@ document.getElementById('addCampaignForm').addEventListener('submit', function(e
         let campaignData = {
            
             name,
-            list_id: null,
+            list_id: JSON.stringify([]),
             paused,
             subject: '', 
             body : '<p><br></p>', 
-            dates: JSON.stringify([]), 
-            email,
-            app_password
+             
         };
         console.log(campaignData);
-        const loader = document.getElementById('loader');
 
-
-        //show loader
-        loader.style.display = 'flex';
         fetch('/add_campaign', {
             method: 'POST',
             headers: {
@@ -177,7 +122,9 @@ document.getElementById('addCampaignForm').addEventListener('submit', function(e
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+              document.getElementById('loader').style.display = 'none';
+              showToast('an error occurred', false);
+              throw new Error(`HTTP error! Status: ${response.status}`);
             }
             return response.json();
         })
@@ -185,75 +132,144 @@ document.getElementById('addCampaignForm').addEventListener('submit', function(e
             //if sucsess ful 
             if (data.success) {
                 //add a new campain element only when server has confimred upload to db
-                error.style.display = 'none';
+              
 
                 campaignData.id  = data.campaign_id;
-                if (campaignData.paused) {
-                    campaignData.paused = 0;
-                }
-                else {
-                    campaignData.paused = 1;
-                }
-                add_new_campaign(campaignData);
-                document.getElementById('addCampaignForm').reset();
-                goToFirstSection();
+           
+                campaignData.schedule = [];
+                const ele = add_new_campaign(campaignData);
+                document.getElementById('campaignName').value = '';
+                
+                //HIDE THE NO CAMPIGNS MESSAGE
+
+
                 closeCampaignModal();
                 backToCampaignList();
-                openCampaignDetails(objectToCampaignCard(campaignData));
+                showToast('Campaign Created Successfully');
+                setTimeout(() => {
+                    openCampaignDetails(ele);
+                    document.getElementById('loader').style.display = 'none';
+                }, 500);
+
 
             } 
             //on fail
             else {
-                error.textContent = 'error : ' + data.error;
-                error.style.display = 'block';
+                document.getElementById('loader').style.display = 'none';
+                console.log(data.error);
+                showToast('error : ' + data.error);
 
             }
-            loader.style.display = 'none';
-
         })
-
-        
-
         //send to server for saving
         // Close the modal after submission
-        
     }
     
-});
+};
 
-function createPasswordInputs() {
-    const container = document.getElementById('appPasswordContainer');
-    container.innerHTML = ''; // Clear previous inputs
 
-    for (let i = 0; i < 16; i++) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = 1;
-        input.className = "single-inputs w-[6.25%] h-10 text-center bg-transparent text-gray-200 text-lg focus:outline-none border-b border-gray-600";
 
-        // Add extra margin after every 4th input (except the last one)
-        if (i % 4 === 3 && i !== 15) {
-            input.style.marginRight = '1.5rem'; // adjust the space as you like
-        }
 
-        // Auto focus next input
-        input.addEventListener('input', function () {
-            if (input.value.length === 1 && input.nextElementSibling) {
-                input.nextElementSibling.focus();
-            }
-        });
+// Filter campaigns on input changes
+function applyFilters() {
+  const statusFilter = document.getElementById('filterStatus').value;
+  const nameFilter = document.getElementById('filterName').value.toLowerCase();
+  const minRecipients = parseInt(document.getElementById('filterMinRecipients').value) || 0;
 
-        input.addEventListener('keydown', function (e) {
-            if (e.key === 'Backspace' && input.value === '' && input.previousElementSibling) {
-                input.previousElementSibling.focus();
-            }
-        });
+  const campaignList = document.getElementById('campaignList');
+  const campaigns = campaignList.children;
 
-        container.appendChild(input);
+  for (const campaignCard of campaigns) {
+    // Get campaign details from data attributes
+    const paused = campaignCard.getAttribute('data-paused') === 'true';
+    const name = campaignCard.getAttribute('data-name').toLowerCase();
+    const list_id = JSON.parse(campaignCard.getAttribute('data-list_id'));
+    const recipientsCount = getRecipientCount(list_id);
+
+    // Status filter
+    let statusMatch = (statusFilter === 'all') ||
+                      (statusFilter === 'paused' && paused) ||
+                      (statusFilter === 'running' && !paused);
+
+    // Name filter
+    let nameMatch = name.includes(nameFilter);
+
+    // Recipients count filter
+    let recipientsMatch = recipientsCount >= minRecipients;
+
+    // Show or hide campaign card
+    if (statusMatch && nameMatch && recipientsMatch) {
+      campaignCard.style.display = '';
+    } else {
+      campaignCard.style.display = 'none';
     }
+  }
 }
 
-createPasswordInputs();
+// Hook events to filters
+document.getElementById('filterStatus').addEventListener('change', applyFilters);
+document.getElementById('filterName').addEventListener('input', applyFilters);
+document.getElementById('filterMinRecipients').addEventListener('input', applyFilters);
 
 
 
+
+function deleteCampaign() {
+    //get current id
+    
+    const id = currentEdit.getAttribute('data-id');
+
+    if (!id) {return ErrorModal('no id found');}
+    showConfirmation({
+      title: "Delete Campaign",
+      message: "This will permanently delete the campaign and cancel any scheduled emails. Are you sure you want to proceed?",
+      onConfirm: () => {
+        proceedDelete(id);
+      }
+    });
+}
+
+function proceedDelete(id) {
+    loader.style.display = 'flex';
+    const data = {table: 'campaigns', id: id};
+    
+    fetch('/api/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data) 
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            //if sucsess ful 
+            if (data.success) {
+                //remove it from campaigns , and go back to campaiogn list 
+                const campaignList = document.getElementById('campaignList');
+                const element = campaignList.querySelector(`[data-id="${id}"]`);
+
+                if (element) {
+                element.remove();
+                //here if there is no other ele in campaign list show
+                    if (campaignList.children.length == 0){
+
+                    display_no_campaign_message();
+                } 
+                }
+
+
+                backToCampaignList();
+                 showToast('Deleted Successfully');
+
+
+            }
+            else {
+                ErrorModal(data.error);
+            }
+            loader.style.display = 'none';
+    })
+}

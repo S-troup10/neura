@@ -3,11 +3,11 @@
 window.onload = showListTab('manual')
 function showListTab(tab) {
     // Hide all tab content
-    document.querySelectorAll('.tab-content').forEach(tabDiv => tabDiv.classList.add('hidden'));
+    document.querySelectorAll('.list-tab-content').forEach(tabDiv => tabDiv.classList.add('hidden'));
     document.getElementById(`tab-${tab}`).classList.remove('hidden');
   
     // Reset all tab buttons
-    document.querySelectorAll('.tab-button').forEach(btn => {
+    document.querySelectorAll('.list-tab-button').forEach(btn => {
       btn.classList.remove('border-b-2', 'border-blue-500', 'text-white');
       btn.classList.add('text-gray-400');
     });
@@ -147,9 +147,9 @@ function detectColumns(headers) {
         render_ListsTable();
         
 
-
+        showToast('Deleted Successfully');
       } else {
-        alert("Error: " + data.error);
+        ErrorModal("Error: " + data.error);
       }
     });
     

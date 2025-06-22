@@ -81,3 +81,69 @@ function ErrorModal(text) {
     setTimeout(() => modal.classList.add("hidden"), 300);
   }
   
+
+
+
+
+
+
+
+/**
+ * showToast(message, success = true)
+ * 
+ * Displays a toast notification in the top-right corner.
+ * @param {string} message — the text to display
+ * @param {boolean} success — whether it's a success (green) or error (red) toast
+ */
+function showToast(message, success = true) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+const toast = document.createElement('div');
+toast.className = [
+  'flex items-center gap-3',
+  'max-w-xs w-full',
+  'p-4',
+  'rounded-xl',
+  'shadow-lg',
+  'text-white',
+  'bg-gradient-to-br from-gray-900 to-gray-800', // dark purple gradient
+  'backdrop-blur',
+  'border border-purple-700',
+  'transform transition-all duration-300',
+  'opacity-0 translate-x-4'
+].join(' ');
+
+// Icon and accent color
+const iconColor = success ? 'text-green-400' : 'text-red-500';
+const iconClass = success ? 'fa-check-circle' : 'fa-exclamation-circle';
+
+toast.innerHTML = `
+  <i class="fas ${iconClass} ${iconColor} text-xl"></i>
+  <span class="flex-1 text-sm text-purple-100">${message}</span>
+`;
+
+toast.style.boxShadow = `0 0 2px ${success ? '#a855f7' : '#f472b6'}`;
+
+
+
+  // Append and trigger animation
+  container.appendChild(toast);
+  // next frame: fade in
+  requestAnimationFrame(() => {
+    toast.classList.remove('opacity-0', 'translate-x-4');
+    toast.classList.add('opacity-100', 'translate-x-0');
+  });
+
+  // Auto-remove after 3s
+  setTimeout(() => {
+    // fade out
+    toast.classList.remove('opacity-100', 'translate-x-0');
+    toast.classList.add('opacity-0', 'translate-x-4');
+    // remove from DOM after transition
+    toast.addEventListener('transitionend', () => {
+      toast.remove();
+    }, { once: true });
+  }, 3000);
+}
+
