@@ -82,7 +82,7 @@ function AttemptLogin() {
 }
 
 function Login(email, password) {
-    fetch("http://127.0.0.1:5000/login", {
+    fetch("/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email, password: password }),
